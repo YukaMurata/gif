@@ -12,8 +12,8 @@ export default class Gif extends EventEmitter {
     this.context = this.canvas.getContext('2d');
 
     this.renderImg = document.querySelector('img.render');
-    this.contentWidth = 500;
-    this.contentHeight = 500;
+    this.contentWidth = 300;
+    this.contentHeight = 300;
     this.url = '';
     this.images = [];
     this.gifSrc = '';
@@ -46,8 +46,8 @@ export default class Gif extends EventEmitter {
       workerScript: './js/gif.worker.js',
       background: '#fff', //背景色
       quality: 5, //クオリティ
-      width: 500,
-      height: 500
+      width: 300,
+      height: 300
     });
 
     this.addEvent();
@@ -80,7 +80,7 @@ export default class Gif extends EventEmitter {
     this.canvas.height = this.contentHeight;
     this.createImages.onload = () => {
       console.log(this.createImages);
-      this.context.drawImage(this.createImages, 0, 0, 500, 500);
+      this.context.drawImage(this.createImages, 0, 0, 300, 300);
       this.emit('createImages');
     };
   }
@@ -123,12 +123,13 @@ export default class Gif extends EventEmitter {
    */
   createGif() {
     for (let i = 0; i < 16; i++) {
-      const width = 500 - 33 * i;
-      const centerPoint = 250 - width / 2;
+      const width = 300 - 20 * i;
+      console.log(width);
+      const centerPoint = 150 - width / 2;
       const alpha = (10 - i * 0.6) / 10;
       this.context.clearRect(0, 0, this.contentWidth, this.contentHeight);
       this.context.drawImage(this.createImages, centerPoint, centerPoint, width, width);
-      this.context.drawImage(this.newFrame[i], 0, 0, 500, 500);
+      this.context.drawImage(this.newFrame[i], 0, 0, 300, 300);
       this.context.globalAlpha = alpha;
       this.gif.addFrame(this.canvas, {
         delay: 100,
