@@ -43,7 +43,7 @@ export default class Gif extends EventEmitter {
       debug: true, //consoleを出力するかどうか
       workers: 2, //一度にスタートさせる量
       repeat: 0, //gifをリピートさせるかどうか
-      workerScript: '/../../../js/gif.worker.js',
+      workerScript: './js/gif.worker.js',
       background: '#fff', //背景色
       quality: 5, //クオリティ
       width: 500,
