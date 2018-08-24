@@ -130,7 +130,7 @@ export default class Gif extends EventEmitter {
       this.context.clearRect(0, 0, this.contentWidth, this.contentHeight);
       this.context.drawImage(this.createImages, centerPoint, centerPoint, width, width);
       this.context.drawImage(this.newFrame[i], 0, 0, 300, 300);
-      this.context.globalAlpha = alpha;
+      // this.context.globalAlpha = alpha;
       this.gif.addFrame(this.canvas, {
         delay: 100,
         copy: true
