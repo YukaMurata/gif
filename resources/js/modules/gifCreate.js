@@ -1,6 +1,17 @@
 import GIF from '../../gif.js/dist/gif';
 import EventEmitter from 'events';
+import EXIF from 'exif-js';
 
+const base64ToArrayBuffer = base64 => {
+  base64 = base64.replace(/^data\:([^\;]+)\;base64,/gim, '');
+  const binaryString = atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes.buffer;
+};
 export default class Gif extends EventEmitter {
   constructor() {
     super();
@@ -9,6 +20,7 @@ export default class Gif extends EventEmitter {
     this.$preview = document.getElementById('preview');
     this.newImage = document.querySelectorAll('#preview');
     this.image = document.querySelectorAll('img.input');
+    this.$exif = document.querySelectorAll('.exif');
     this.canvas = document.querySelector('canvas');
     this.context = this.canvas.getContext('2d');
 
@@ -67,7 +79,8 @@ export default class Gif extends EventEmitter {
     );
 
     this.on('inputImage', () => {
-      this.createImage();
+      this.checkImageSize();
+      // this.createImage();
     });
 
     this.on('createImages', () => {
@@ -103,6 +116,15 @@ export default class Gif extends EventEmitter {
         this.emit('inputImage', e.target.result);
       };
       reader.readAsDataURL(e.target.files[0]);
+    }
+  }
+
+  checkImageSize() {
+    const arrayBuffer = base64ToArrayBuffer(this.createImages.src);
+    const exif = EXIF.readFromBinaryFile(arrayBuffer);
+    console.log(exif.Orientation);
+    if (exif) {
+      this.$exif[0].textContent = exif.Orientation;
     }
   }
 
