@@ -26,8 +26,8 @@ export default class Gif extends EventEmitter {
     this.context = this.canvas.getContext('2d');
 
     this.renderImg = document.querySelector('img.render');
-    this.contentWidth = 600;
-    this.contentHeight = 400;
+    this.contentWidth = 1000;
+    this.contentHeight = 1000;
     this.url = '';
     this.images = [];
     this.gifSrc = '';
@@ -105,8 +105,9 @@ export default class Gif extends EventEmitter {
     this.createImages.onload = () => {
       const width = this.createImages.width;
       const centerPositionX = width / 2 - 150;
+      ctx.translate(this.contentWidth / 2, this.contentWidth / 2);
       ctx.rotate((this.rotate * Math.PI) / 180);
-      ctx.drawImage(this.createImages, 0, 0);
+      ctx.drawImage(this.createImages, -width / 2, -width / 2);
       // ctx.drawImage(this.createImages, centerPositionX, 0, 300, 200, 0, 0, 300, 200);
       this.emit('createImages');
     };
