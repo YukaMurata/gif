@@ -2,6 +2,7 @@ import GIF from '../../gif.js/dist/gif';
 import EventEmitter from 'events';
 import EXIF from 'exif-js';
 
+//画像データの変換
 const base64ToArrayBuffer = base64 => {
   base64 = base64.replace(/^data\:([^\;]+)\;base64,/gim, '');
   const binaryString = atob(base64);
@@ -25,8 +26,8 @@ export default class Gif extends EventEmitter {
     this.context = this.canvas.getContext('2d');
 
     this.renderImg = document.querySelector('img.render');
-    this.contentWidth = 300;
-    this.contentHeight = 200;
+    this.contentWidth = 600;
+    this.contentHeight = 400;
     this.url = '';
     this.images = [];
     this.gifSrc = '';
@@ -51,6 +52,7 @@ export default class Gif extends EventEmitter {
     );
     this.newFrame = {};
     this.frameIndex = 0;
+    this.rotate = 0;
 
     this.gif = new GIF({
       debug: true, //consoleを出力するかどうか
@@ -82,6 +84,9 @@ export default class Gif extends EventEmitter {
       this.checkImageSize();
       // this.createImage();
     });
+    this.on('checkImageSize', () => {
+      this.createImage();
+    });
 
     this.on('createImages', () => {
       this.downloadFrame();
@@ -95,10 +100,14 @@ export default class Gif extends EventEmitter {
     const ctx = this.resizeImage.getContext('2d');
     this.canvas.width = this.contentWidth;
     this.canvas.height = this.contentHeight;
+    this.resizeImage.width = this.contentWidth;
+    this.resizeImage.height = this.contentHeight;
     this.createImages.onload = () => {
       const width = this.createImages.width;
       const centerPositionX = width / 2 - 150;
-      ctx.drawImage(this.createImages, centerPositionX, 0, 300, 200, 0, 0, 300, 200);
+      ctx.rotate((this.rotate * Math.PI) / 180);
+      ctx.drawImage(this.createImages, 0, 0);
+      // ctx.drawImage(this.createImages, centerPositionX, 0, 300, 200, 0, 0, 300, 200);
       this.emit('createImages');
     };
   }
@@ -122,10 +131,21 @@ export default class Gif extends EventEmitter {
   checkImageSize() {
     const arrayBuffer = base64ToArrayBuffer(this.createImages.src);
     const exif = EXIF.readFromBinaryFile(arrayBuffer);
-    console.log(exif.Orientation);
-    if (exif) {
-      this.$exif[0].textContent = exif.Orientation;
+    const orientation = exif.Orientation;
+    if (exif && orientation) {
+      switch (orientation) {
+        case 3:
+          this.rotate = 180;
+          break;
+        case 6:
+          this.rotate = 90;
+          break;
+        case 8:
+          this.rotate = -90;
+          break;
+      }
     }
+    this.emit('checkImageSize');
   }
 
   /**
